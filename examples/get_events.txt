@@ -1,0 +1,15 @@
+{
+    "$metadata": {
+        "httpStatusCode": 200,
+        "requestId": "E43A32J385V51OVIITEB07HHSRVV4KQNSO5AEMVJF66Q9ASUAAJG",
+        "attempts": 1,
+        "totalRetryDelay": 0
+    },
+    "Items": [
+        {
+            "eventId": "1135398873062445157",
+            "eventName": "Test Event",
+            "guildId": "859588661548417086"
+        }
+    ]
+}

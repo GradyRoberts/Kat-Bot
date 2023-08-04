@@ -11,6 +11,10 @@ functions:
     events: 
       - http: 
           path: /interactions
-          method: ANY
+          method: POST
+          cors: true
+      - http:
+          path: /warmer
+          method: GET
           cors: true
     environment: ${file(env.json)}

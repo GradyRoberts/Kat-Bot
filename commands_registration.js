@@ -47,12 +47,12 @@ const MENTION_EVENT_COMMAND = {
       type: 3,
       name: 'message',
       description: 'Add a message to your mention',
-      required: false
+      required: true
     }
   ],
   type: 1
 }
 
-const ALL_COMMANDS = [TEST_COMMAND, MENTION_VOICE_COMMAND, MENTION_EVENT_COMMAND];
+const ALL_COMMANDS = [MENTION_EVENT_COMMAND]; // , TEST_COMMAND, MENTION_VOICE_COMMAND];
 
 InstallGlobalCommands(process.env.APP_ID, ALL_COMMANDS);

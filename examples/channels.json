@@ -1,0 +1,73 @@
+[
+    {
+        "id": "859588662606168074",
+        "type": 4,
+        "flags": 0,
+        "guild_id": "859588661548417086",
+        "name": "Text Channels",
+        "parent_id": null,
+        "position": 0,
+        "permission_overwrites": []
+    },
+    {
+        "id": "859588662606168075",
+        "type": 4,
+        "flags": 0,
+        "guild_id": "859588661548417086",
+        "name": "Voice Channels",
+        "parent_id": null,
+        "position": 0,
+        "permission_overwrites": []
+    },
+    {
+        "id": "859588662606168076",
+        "type": 0,
+        "last_message_id": "1133592440180318269",
+        "flags": 0,
+        "guild_id": "859588661548417086",
+        "name": "general",
+        "parent_id": "859588662606168074",
+        "rate_limit_per_user": 0,
+        "topic": null,
+        "position": 0,
+        "permission_overwrites": [
+            {
+                "id": "859588661548417086",
+                "type": 0,
+                "allow": "49152",
+                "deny": "0"
+            }
+        ],
+        "nsfw": false
+    },
+    {
+        "id": "859588662606168077",
+        "type": 2,
+        "last_message_id": null,
+        "flags": 0,
+        "guild_id": "859588661548417086",
+        "name": "General",
+        "parent_id": "859588662606168075",
+        "rate_limit_per_user": 0,
+        "bitrate": 64000,
+        "user_limit": 0,
+        "rtc_region": null,
+        "position": 0,
+        "permission_overwrites": [],
+        "nsfw": false
+    },
+    {
+        "id": "859934050155364352",
+        "type": 0,
+        "last_message_id": "862037551158394901",
+        "flags": 0,
+        "guild_id": "859588661548417086",
+        "name": "yahtzee",
+        "parent_id": "859588662606168074",
+        "rate_limit_per_user": 0,
+        "topic": null,
+        "position": 1,
+        "permission_overwrites": [],
+        "nsfw": false
+    }
+]

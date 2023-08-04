@@ -175,7 +175,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/kat-bot/dev/1690510644090-2023-07-28T02:17:24.090Z/kat-bot.zip"
+                "S3Key": "serverless/kat-bot/dev/1691101051585-2023-08-03T22:17:31.585Z/kat-bot.zip"
               },
               "Handler": "handler.handler",
               "Runtime": "nodejs18.x",
@@ -200,14 +200,14 @@
               "AppLogGroup"
             ]
           },
-          "AppLambdaVersionn6nQneaGxcDstLYTFjrgHzK5FBkysAhhF1IkQdtdQ": {
+          "AppLambdaVersiongaMDupILkqlYGlh5aQsSTEWo79MqSHMxmj4sFdo6I": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "AppLambdaFunction"
               },
-              "CodeSha256": "TQoRAJUXs+HvdNIs3pk88ksJFSXCuzVBsjRJIK+vxAA="
+              "CodeSha256": "B0SsTrwFiwKA+Nnf9n4uDk1RvqISzD7xNwiGeRF4wB8="
             }
           },
           "ApiGatewayRestApi": {
@@ -232,6 +232,21 @@
                 ]
               },
               "PathPart": "interactions",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceWarmer": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "warmer",
               "RestApiId": {
                 "Ref": "ApiGatewayRestApi"
               }
@@ -266,7 +281,7 @@
                     "ResponseParameters": {
                       "method.response.header.Access-Control-Allow-Origin": "'*'",
                       "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
-                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,DELETE,GET,HEAD,PATCH,POST,PUT'"
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST'"
                     },
                     "ResponseTemplates": {
                       "application/json": ""
@@ -282,10 +297,55 @@
               }
             }
           },
-          "ApiGatewayMethodInteractionsAny": {
+          "ApiGatewayMethodWarmerOptions": {
             "Type": "AWS::ApiGateway::Method",
             "Properties": {
-              "HttpMethod": "ANY",
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceWarmer"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodInteractionsPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
               "RequestParameters": {},
               "ResourceId": {
                 "Ref": "ApiGatewayResourceInteractions"
@@ -328,7 +388,53 @@
               "AppLambdaPermissionApiGateway"
             ]
           },
-          "ApiGatewayDeployment1690510631086": {
+          "ApiGatewayMethodWarmerGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceWarmer"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "AppLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "AppLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayDeployment1691101048340": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -338,7 +444,9 @@
             },
             "DependsOn": [
               "ApiGatewayMethodInteractionsOptions",
-              "ApiGatewayMethodInteractionsAny"
+              "ApiGatewayMethodWarmerOptions",
+              "ApiGatewayMethodInteractionsPost",
+              "ApiGatewayMethodWarmerGet"
             ]
           },
           "AppLambdaPermissionApiGateway": {
@@ -391,7 +499,7 @@
           "AppLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "AppLambdaVersionn6nQneaGxcDstLYTFjrgHzK5FBkysAhhF1IkQdtdQ"
+              "Ref": "AppLambdaVersiongaMDupILkqlYGlh5aQsSTEWo79MqSHMxmj4sFdo6I"
             },
             "Export": {
               "Name": "sls-kat-bot-dev-AppLambdaFunctionQualifiedArn"
@@ -517,12 +625,36 @@
           {
             "http": {
               "path": "interactions",
-              "method": "any",
+              "method": "post",
               "cors": {
                 "origin": "*",
                 "methods": [
                   "OPTIONS",
-                  "ANY"
+                  "POST"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent",
+                  "X-Amzn-Trace-Id"
+                ],
+                "allowCredentials": false
+              },
+              "integration": "AWS_PROXY"
+            }
+          },
+          {
+            "http": {
+              "path": "warmer",
+              "method": "get",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "GET"
                 ],
                 "headers": [
                   "Content-Type",
@@ -550,7 +682,7 @@
         "timeout": 6,
         "runtime": "nodejs18.x",
         "vpc": {},
-        "versionLogicalId": "AppLambdaVersionn6nQneaGxcDstLYTFjrgHzK5FBkysAhhF1IkQdtdQ"
+        "versionLogicalId": "AppLambdaVersiongaMDupILkqlYGlh5aQsSTEWo79MqSHMxmj4sFdo6I"
       }
     },
     "configValidationMode": "warn",
@@ -566,10 +698,10 @@
     },
     "layers": {},
     "isDashboardMonitoringPreconfigured": false,
-    "artifact": "C:\\Users\\Grady\\Desktop\\discord-example-app-main\\discord-example-app-main\\.serverless\\kat-bot.zip"
+    "artifact": "C:\\Users\\Grady\\Desktop\\discord-example-app-main\\.serverless\\kat-bot.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/kat-bot/dev/1690510644090-2023-07-28T02:17:24.090Z",
+    "artifactDirectoryName": "serverless/kat-bot/dev/1691101051585-2023-08-03T22:17:31.585Z",
     "artifact": "kat-bot.zip"
   }
 }

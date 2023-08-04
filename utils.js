@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import fetch from 'node-fetch';
 import { verifyKey } from 'discord-interactions';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, ExecuteStatementCommand } from '@aws-sdk/lib-dynamodb';
 
 export function VerifyDiscordRequest(clientKey) {
   return function (req, res, buf, encoding) {
@@ -15,28 +17,79 @@ export function VerifyDiscordRequest(clientKey) {
   };
 }
 
+function getDynamoDBClient() {
+  const client = new DynamoDBClient({"region": "us-east-1"});
+  const docClient = DynamoDBDocumentClient.from(client);
+
+  return docClient;
+}
+
+async function DynamoDBRequest(statement, parameters) {
+  const client = getDynamoDBClient();
+  const command = new ExecuteStatementCommand({
+    TableName: 'DiscordScheduledEvents',
+    Statement: statement,
+    Parameters: parameters,
+  });
+
+  const response = await client.send(command);
+  console.log(JSON.stringify(response));
+  return response;
+}
+
+export async function getGuildScheduledEvents(guildId) {
+  const events = await DynamoDBRequest("SELECT * FROM DiscordScheduledEvents WHERE guildId=?", [guildId]);
+  console.log(`Got response from DB: ${JSON.stringify(events)}`);
+  if (events.Items.length > 0) {
+    return events.Items.map((e) => ({"name": e.eventName, "value": `${e.eventName}:${e.eventId}`}));
+  } else {
+    return []
+  }
+}
+
+export async function updateGuildScheduledEvents(guildId, events) {
+  console.log(`Submitting events ${JSON.stringify(events)}`);
+  const expTime = Math.floor(Date.now()/1000) + 90; // 90 seconds TTL
+  let response;
+  for (let e of events) {
+    console.log(JSON.stringify(e));
+    response = await DynamoDBRequest(
+      "INSERT INTO DiscordScheduledEvents value {'guildId':?, 'eventId':?, 'eventName':?, 'expTime':?}", 
+      [guildId, e.value.split(":")[1], e.name, expTime]
+    );
+    console.log(JSON.stringify(response));
+  }
+}
+
 export async function DiscordRequest(endpoint, options) {
   // append endpoint to root API URL
   const url = 'https://discord.com/api/v10/' + endpoint;
+  console.log(`Making API request to ${url}`);
   // Stringify payloads
   if (options.body) options.body = JSON.stringify(options.body);
   // Use node-fetch to make requests
-  const res = await fetch(url, {
-    headers: {
-      Authorization: `Bot ${process.env.DISCORD_TOKEN}`,
-      'Content-Type': 'application/json; charset=UTF-8',
-      'User-Agent': 'Kat Discord Bot',
-    },
-    ...options
-  });
-  // throw API errors
-  if (!res.ok) {
-    const data = await res.json();
-    console.log(res.status);
-    throw new Error(JSON.stringify(data));
+  try {
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bot ${process.env.DISCORD_TOKEN}`,
+        'Content-Type': 'application/json; charset=UTF-8',
+        'User-Agent': 'Kat Discord Bot',
+      },
+      ...options
+    });
+
+    // throw API errors
+    if (!res.ok) {
+      const data = await res.json();
+      console.log(`${res.status} - ${JSON.stringify(data)}`);
+      // throw new Error(JSON.stringify(data));
+    }
+    // return original response
+    return res;
+  } catch (error) {
+    console.log(`ERROR: ${error}`);
+    throw error; 
   }
-  // return original response
-  return res;
 }
 
 export async function InstallGlobalCommands(appId, commands) {
@@ -49,10 +102,4 @@ export async function InstallGlobalCommands(appId, commands) {
   } catch (err) {
     console.error(err);
   }
-}
-
-// Simple method that returns a random emoji from list
-export function getRandomEmoji() {
-  const emojiList = ['😭','😄','😌','🤓','😎','😤','🤖','😶‍🌫️','🌏','📸','💿','👋','🌊','✨'];
-  return emojiList[Math.floor(Math.random() * emojiList.length)];
 }

@@ -1,0 +1,66 @@
+[
+    {
+        "id": "1135398873062445157",
+        "guild_id": "859588661548417086",
+        "name": "Test Event",
+        "description": "Cool event!",
+        "channel_id": null,
+        "creator_id": "163032275074678784",
+        "creator": {
+            "id": "163032275074678784",
+            "username": ".grob",
+            "avatar": "4150b027bcda35dfd316ea62873464d3",
+            "discriminator": "0",
+            "public_flags": 0,
+            "flags": 0,
+            "banner": null,
+            "accent_color": 1710104,
+            "global_name": "grob",
+            "avatar_decoration": null,
+            "banner_color": "#1a1818"
+        },
+        "image": "34e760ea17971895b5e387bd21e2f2f8",
+        "scheduled_start_time": "2023-08-09T03:00:00+00:00",
+        "scheduled_end_time": "2023-08-09T04:00:00+00:00",
+        "status": 1,
+        "entity_type": 3,
+        "entity_id": null,
+        "privacy_level": 2,
+        "sku_ids": [],
+        "entity_metadata": {
+            "location": "9533 Clocktower Lane"
+        }
+    },
+    {
+        "id": "1135398873062445157",
+        "guild_id": "859588661548417086",
+        "name": "Another Test Event",
+        "description": "Cool event!",
+        "channel_id": null,
+        "creator_id": "163032275074678784",
+        "creator": {
+            "id": "163032275074678784",
+            "username": ".grob",
+            "avatar": "4150b027bcda35dfd316ea62873464d3",
+            "discriminator": "0",
+            "public_flags": 0,
+            "flags": 0,
+            "banner": null,
+            "accent_color": 1710104,
+            "global_name": "grob",
+            "avatar_decoration": null,
+            "banner_color": "#1a1818"
+        },
+        "image": "34e760ea17971895b5e387bd21e2f2f8",
+        "scheduled_start_time": "2023-08-09T03:00:00+00:00",
+        "scheduled_end_time": "2023-08-09T04:00:00+00:00",
+        "status": 1,
+        "entity_type": 3,
+        "entity_id": null,
+        "privacy_level": 2,
+        "sku_ids": [],
+        "entity_metadata": {
+            "location": "9533 Clocktower Lane"
+        }
+    }
+]
